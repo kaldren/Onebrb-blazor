@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using System.Linq;
 using Onebrb.Server.Data;
 using Onebrb.Server.Models;
+using Onebrb.Server.Settings;
 
 namespace Onebrb.Server
 {
@@ -44,6 +45,11 @@ namespace Onebrb.Server
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+
+            // Settings
+            services.Configure<GeneralSettings>
+                (Configuration.GetSection($"AppSettings:{GeneralSettings.Settings}"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
