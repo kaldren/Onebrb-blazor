@@ -1,24 +1,61 @@
 ﻿@page "/message"
+@page "/message/{recipient}"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Onebrb.Shared.ViewModels.Message;
 @attribute [Authorize]
 @using System.Net.Http
 @inject HttpClient Http
 
-<h3>Messages</h3>
+@if (!string.IsNullOrWhiteSpace(Recipient))
+{
+    <EditForm Model="@viewModel" OnValidSubmit="SendMessage">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
-<button @onclick="@AddItem">Send message</button>
+        <h3>Messaging @Recipient</h3>
 
-@if (creatingMessageResult)
+        <input type="hidden" @bind="@Recipient" />
+        <div class="form-group">
+            <label>
+                Title:
+                <InputText @bind-Value="@viewModel.Title" class="form-control"></InputText>
+            </label>
+        </div>
+        <div class="form-group">
+            <label>
+                Text:
+                <InputTextArea @bind-Value="@viewModel.Title" class="form-control"></InputTextArea>
+            </label>
+        </div>
+        <button class="btn btn-success"><i class="fas fa-paper-plane fas--space-right"></i>Send</button>
+        <a class="btn btn-secondary"><i class="fas fa-window-close fas--space-right"></i>Cancel</a>
+    </EditForm>
+}
+else
+{
+    <p>All messages</p>
+}
+
+@if (response != null && response.IsSuccessStatusCode)
 {
     <p>Success!</p>
 }
 
 @code {
-    private bool creatingMessageResult { get; set; }
+    private CreateMessageViewModel viewModel = new CreateMessageViewModel();
+    private HttpResponseMessage response;
 
-    private async Task AddItem()
+    [Parameter]
+    public string Recipient { get; set; }
+
+    private async Task SendMessage()
     {
-        var result = await Http.PostAsync("https://localhost:5001/api/Message", new StringContent("Hi from Blazor!"));
+        response = await Http.PostAsync("https://localhost:5001/api/Message/Create", new StringContent("Hi from Blazor!"));
+    }
+
+    protected override void OnInitialized()
+    {
+        Recipient = Recipient ?? "Bob";
     }
 }

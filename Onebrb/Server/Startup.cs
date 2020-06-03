@@ -47,7 +47,8 @@ namespace Onebrb.Server
                 .AddIdentityServerJwt();
 
             services.AddControllersWithViews();
-            services.AddRazorPages();
+            services.AddRazorPages().
+                AddRazorRuntimeCompilation();
 
 
             // Settings
