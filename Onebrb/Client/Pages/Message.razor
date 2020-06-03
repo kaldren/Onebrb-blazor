@@ -9,28 +9,26 @@
 
 @if (!string.IsNullOrWhiteSpace(Recipient))
 {
-    <EditForm Model="@viewModel" OnValidSubmit="SendMessage">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
+    <div class="message-form">
+        <EditForm Model="@viewModel" OnValidSubmit="SendMessage">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
-        <h3>Messaging @Recipient</h3>
+            <h3>Messaging @Recipient</h3>
 
-        <input type="hidden" @bind="@Recipient" />
-        <div class="form-group">
-            <label>
+            <input type="hidden" @bind="@Recipient" />
+            <div class="form-group">
                 Title:
-                <InputText @bind-Value="@viewModel.Title" class="form-control"></InputText>
-            </label>
-        </div>
-        <div class="form-group">
-            <label>
+                <InputText type="text" @bind-Value="@viewModel.Title" class="form-control"></InputText>
+            </div>
+            <div class="form-group">
                 Text:
                 <InputTextArea @bind-Value="@viewModel.Title" class="form-control"></InputTextArea>
-            </label>
-        </div>
-        <button class="btn btn-success"><i class="fas fa-paper-plane fas--space-right"></i>Send</button>
-        <a class="btn btn-secondary"><i class="fas fa-window-close fas--space-right"></i>Cancel</a>
-    </EditForm>
+            </div>
+            <button class="btn btn-success"><i class="fas fa-paper-plane fas--space-right"></i>Send</button>
+            <a class="btn btn-secondary"><i class="fas fa-window-close fas--space-right"></i>Cancel</a>
+        </EditForm>
+    </div>
 }
 else
 {

@@ -192,3 +192,10 @@ app {
     margin: 0px 8px 0px 0px;
 }
 /*#endregion Icons */
+
+/*#region Messages*/
+.message-form {
+    width: 600px;
+    max-width: 100%;
+}
+/*#endregion Messages*/
