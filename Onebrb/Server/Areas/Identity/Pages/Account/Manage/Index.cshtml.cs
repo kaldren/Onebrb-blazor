@@ -12,11 +12,11 @@ namespace Onebrb.Server.Areas.Identity.Pages.Account.Manage
 {
     public partial class IndexModel : PageModel
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ApplicationUserManager _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
         public IndexModel(
-            UserManager<ApplicationUser> userManager,
+            ApplicationUserManager userManager,
             SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
@@ -50,15 +50,13 @@ namespace Onebrb.Server.Areas.Identity.Pages.Account.Manage
 
         private async Task LoadAsync(ApplicationUser user)
         {
-            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
-
-            Username = currentUser.UserName;
+            Username = user.UserName;
 
             Input = new InputModel
             {
-                PhoneNumber = currentUser.PhoneNumber,
-                FirstName = currentUser.FirstName,
-                LastName = currentUser.LastName,
+                PhoneNumber = user.PhoneNumber,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
             };
         }
 
@@ -95,6 +93,28 @@ namespace Onebrb.Server.Areas.Identity.Pages.Account.Manage
                 if (!setPhoneResult.Succeeded)
                 {
                     StatusMessage = "Unexpected error when trying to set phone number.";
+                    return RedirectToPage();
+                }
+            }
+
+            var firstName = await _userManager.GetFirstNameAsync(user);
+            if (Input.FirstName != firstName)
+            {
+                var setFirstNameResult = await _userManager.SetFirstNameAsync(user, Input.FirstName);
+                if (!setFirstNameResult)
+                {
+                    StatusMessage = "Unexpected error when trying to set first name.";
+                    return RedirectToPage();
+                }
+            }
+
+            var lastName = await _userManager.GetLastNameAsync(user);
+            if (Input.LastName != lastName)
+            {
+                var setLastNameResult = await _userManager.SetLastNameAsync(user, Input.LastName);
+                if (!setLastNameResult)
+                {
+                    StatusMessage = "Unexpected error when trying to set last name.";
                     return RedirectToPage();
                 }
             }
