@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Onebrb.Server.Data;
 
 namespace Onebrb.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200603125742_Message")]
+    partial class Message
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -301,44 +303,6 @@ namespace Onebrb.Server.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
-                });
-
-            modelBuilder.Entity("Onebrb.Server.Models.Message", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("AuthorId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Body")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DateSent")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsArchivedForAuthor")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsArchivedForRecipient")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeletedForAuthor")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeletedForRecipient")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("RecipientId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
