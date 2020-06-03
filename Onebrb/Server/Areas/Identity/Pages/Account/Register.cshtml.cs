@@ -49,7 +49,7 @@ namespace Onebrb.Server.Areas.Identity.Pages.Account
             // Initializing the roles
             foreach (var role in _generalSettings.Roles)
             {
-                Countries.Add(new SelectListItem
+                AccountTypes.Add(new SelectListItem
                 {
                     Text = role,
                     Value = role
@@ -61,10 +61,10 @@ namespace Onebrb.Server.Areas.Identity.Pages.Account
         public InputModel Input { get; set; }
 
         [BindProperty]
-        public string Country { get; set; }
+        public string AccountType { get; set; }
 
         [BindProperty]
-        public List<SelectListItem> Countries { get; } = new List<SelectListItem>();
+        public List<SelectListItem> AccountTypes { get; } = new List<SelectListItem>();
 
         public string ReturnUrl { get; set; }
 
@@ -120,8 +120,6 @@ namespace Onebrb.Server.Areas.Identity.Pages.Account
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
-                    var accountType = Request.Form["rblAccountType"].ToString();
-
                     // Initialize the roles
                     foreach (var role in _generalSettings.Roles)
                     {
@@ -132,7 +130,7 @@ namespace Onebrb.Server.Areas.Identity.Pages.Account
                     }
 
                     // The user is either Employee or Company
-                    await _userManager.AddToRoleAsync(user, accountType);
+                    await _userManager.AddToRoleAsync(user, AccountType);
 
                     _logger.LogInformation("User created a new account with password.");
 
