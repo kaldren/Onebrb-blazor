@@ -11,9 +11,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Onebrb.Server.Areas.Identity.ViewModels;
 using Onebrb.Server.Models;
+using Onebrb.Server.Settings;
 
 namespace Onebrb.Server.Areas.Identity.Pages.Account
 {
@@ -24,21 +28,43 @@ namespace Onebrb.Server.Areas.Identity.Pages.Account
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly GeneralSettings _generalSettings;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IOptions<GeneralSettings> generalSettings,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager;
+            _generalSettings = generalSettings.Value;
+
+            // Initializing the roles
+            foreach (var role in _generalSettings.Roles)
+            {
+                Countries.Add(new SelectListItem
+                {
+                    Text = role,
+                    Value = role
+                });
+            }
         }
 
         [BindProperty]
         public InputModel Input { get; set; }
+
+        [BindProperty]
+        public string Country { get; set; }
+
+        [BindProperty]
+        public List<SelectListItem> Countries { get; } = new List<SelectListItem>();
 
         public string ReturnUrl { get; set; }
 
@@ -90,10 +116,24 @@ namespace Onebrb.Server.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = Input.UserName, Email = Input.Email };
+                var user = new ApplicationUser { UserName = Input.UserName, Email = Input.Email, FirstName = Input.FirstName, LastName = Input.LastName };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
+                    var accountType = Request.Form["rblAccountType"].ToString();
+
+                    // Initialize the roles
+                    foreach (var role in _generalSettings.Roles)
+                    {
+                        if (!await _roleManager.RoleExistsAsync(role))
+                        {
+                            await _roleManager.CreateAsync(new IdentityRole(role));
+                        }
+                    }
+
+                    // The user is either Employee or Company
+                    await _userManager.AddToRoleAsync(user, accountType);
+
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
