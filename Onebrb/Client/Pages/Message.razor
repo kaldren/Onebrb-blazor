@@ -1,0 +1,24 @@
+﻿@page "/message"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize]
+@using System.Net.Http
+@inject HttpClient Http
+
+<h3>Messages</h3>
+
+<button @onclick="@AddItem">Send message</button>
+
+@if (creatingMessageResult)
+{
+    <p>Success!</p>
+}
+
+@code {
+    private bool creatingMessageResult { get; set; }
+
+    private async Task AddItem()
+    {
+        var result = await Http.PostAsync("https://localhost:5001/api/Message", new StringContent("Hi from Blazor!"));
+    }
+}

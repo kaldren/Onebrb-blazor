@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Onebrb.Server", "Onebrb\Server\Onebrb.Server.csproj", "{7F8645B2-DBF0-4D32-9112-0B0E09B45513}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Onebrb.Server", "Onebrb\Server\Onebrb.Server.csproj", "{7F8645B2-DBF0-4D32-9112-0B0E09B45513}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Onebrb.Client", "Onebrb\Client\Onebrb.Client.csproj", "{BB7A8D3F-3FE7-42BE-B9A2-03DF435578BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Onebrb.Client", "Onebrb\Client\Onebrb.Client.csproj", "{BB7A8D3F-3FE7-42BE-B9A2-03DF435578BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Onebrb.Shared", "Onebrb\Shared\Onebrb.Shared.csproj", "{299B50FA-CBC2-4CDC-B80B-2BA4E499595C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Onebrb.Shared", "Onebrb\Shared\Onebrb.Shared.csproj", "{299B50FA-CBC2-4CDC-B80B-2BA4E499595C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
