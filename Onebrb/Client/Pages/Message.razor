@@ -3,6 +3,9 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using Onebrb.Shared.ViewModels.Message;
+@using System.Text;
+@using System.Text.Json;
+@using System.Text.Json.Serialization;
 @attribute [Authorize]
 @using System.Net.Http
 @inject HttpClient Http
@@ -16,14 +19,14 @@
 
             <h3>Messaging @Recipient</h3>
 
-            <input type="hidden" @bind="@Recipient" />
+            <InputText type="hidden" @bind-Value="@Recipient" class="form-control"></InputText>
             <div class="form-group">
                 Title:
                 <InputText type="text" @bind-Value="@viewModel.Title" class="form-control"></InputText>
             </div>
             <div class="form-group">
                 Text:
-                <InputTextArea @bind-Value="@viewModel.Title" class="form-control"></InputTextArea>
+                <InputTextArea @bind-Value="@viewModel.Body" class="form-control"></InputTextArea>
             </div>
             <button class="btn btn-success"><i class="fas fa-paper-plane fas--space-right"></i>Send</button>
             <a class="btn btn-secondary"><i class="fas fa-window-close fas--space-right"></i>Cancel</a>
@@ -35,10 +38,9 @@ else
     <p>All messages</p>
 }
 
-@if (response != null && response.IsSuccessStatusCode)
-{
-    <p>Success!</p>
-}
+
+<p>@ResponseMessage</p>
+
 
 @code {
     private CreateMessageViewModel viewModel = new CreateMessageViewModel();
@@ -47,9 +49,36 @@ else
     [Parameter]
     public string Recipient { get; set; }
 
+    public string ResponseMessage { get; set; }
+
     private async Task SendMessage()
     {
-        response = await Http.PostAsync("https://localhost:5001/api/Message/Create", new StringContent("Hi from Blazor!"));
+        if (viewModel != null && Recipient != null)
+        {
+            // Set author & recipient
+            viewModel.Author = "kaldren";
+            viewModel.Recipient = Recipient;
+
+            string jsonString = JsonSerializer.Serialize(viewModel);
+
+            if (!string.IsNullOrEmpty(jsonString))
+            {
+                ResponseMessage = $"Sending message...";
+
+                response = await Http.PostAsync("https://localhost:5001/api/Message", 
+                    new StringContent(jsonString, Encoding.UTF8, "application/json"));
+
+                if (response != null && response.IsSuccessStatusCode)
+                {
+                    ResponseMessage = "Message sent!";
+                }
+                else
+                {
+                    ResponseMessage = $"Couldn't send the message {viewModel.Body} - {viewModel.Title}, please try again.";
+                }
+            }
+        }
+
     }
 
     protected override void OnInitialized()

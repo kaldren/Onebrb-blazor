@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -8,13 +9,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Onebrb.Server.Data;
 using Onebrb.Server.Models;
+using Onebrb.Shared.ViewModels.Message;
 
 namespace Onebrb.Server.Controllers
 {
     [ApiController]
-    [Authorize]
-    [Route("api/[controller]/[action]")]
-    public class MessageController : Controller
+    //[Authorize]
+    [Route("api/[controller]")]
+    public class MessageController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
 
@@ -23,40 +25,55 @@ namespace Onebrb.Server.Controllers
             _db = db;
         }
 
-        public IActionResult Index()
+        /// <summary>
+        /// Gets individual message by id (from route id)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Message</returns>
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetMessageById(Guid id)
         {
-            return View();
+            var result =  await _db.Messages.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(result);
+            }
         }
 
-        [HttpGet]
-        public async Task<Message> GetMessageById(Guid id)
-        {
-            return await _db.Messages.FirstOrDefaultAsync(x => x.Id == id);
-        }
-
+        /// <summary>
+        /// Creates a new message
+        /// </summary>
+        /// <param name="model">CreateMessageViewModel</param>
+        /// <returns>Message</returns>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateAsync(string message)
+        public async Task<IActionResult> PostMessage([FromBody] CreateMessageViewModel model)
         {
             var guid = Guid.NewGuid();
 
-            var messageModel = new Message
+            // Automapper tomorrow
+            var message = new Message
             {
                 Id = guid,
-                AuthorId = "1",
-                Body = message,
+                AuthorId = model.Author,
+                Body = model.Body,
                 DateSent = DateTime.UtcNow,
-                RecipientId = "2",
-                Title = "Hi"
+                RecipientId = model.Recipient,
+                Title = model.Title
             };
 
-            await _db.Messages.AddAsync(messageModel);
+            await _db.Messages.AddAsync(message);
             await _db.SaveChangesAsync();
 
             var msgFromDb = _db.Messages.FirstOrDefaultAsync(x => x.Id == guid);
 
-            return CreatedAtAction(nameof(GetMessageById), new { id = guid });
+            return CreatedAtAction(nameof(GetMessageById), new { id = guid }, model);
         }
     }
 }
