@@ -1,0 +1,95 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Onebrb.Shared.ViewModels.Message;
+@using System.Text;
+@using System.Text.Json;
+@using System.Text.Json.Serialization;
+@using System.Net.Http
+@inject HttpClient Http
+
+<div class="message-form">
+    <NotificationComponent CssClass="@NotificationCssClass" Message="@ResponseMessage"></NotificationComponent>
+
+    <EditForm Model="@viewModel" OnValidSubmit="SendMessage">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <h3>Messaging @Recipient</h3>
+
+        <InputText type="hidden" @bind-Value="@Recipient" class="form-control"></InputText>
+        <div class="form-group">
+            Title:
+            <InputText type="text" @bind-Value="@viewModel.Title" class="form-control"></InputText>
+        </div>
+        <div class="form-group">
+            Text:
+            <InputTextArea @bind-Value="@viewModel.Body" class="form-control"></InputTextArea>
+        </div>
+        <button class="btn btn-success" disabled="@IsSendBtnDisabled"><i class="fas fa-paper-plane fas--space-right"></i>Send</button>
+        <a class="btn btn-secondary"><i class="fas fa-window-close fas--space-right"></i>Cancel</a>
+    </EditForm>
+</div>
+
+@code {
+    private CreateMessageViewModel viewModel = new CreateMessageViewModel();
+    private HttpResponseMessage response;
+
+    [Parameter]
+    public string Recipient { get; set; }
+
+    public string ResponseMessage { get; set; }
+    public string NotificationCssClass { get; set; }
+    public bool IsMessageSent { get; set; }
+    public bool UserExists { get; set; }
+    public bool IsSendBtnDisabled { get; set; } = true;
+
+    private async Task SendMessage()
+    {
+        if (viewModel != null && Recipient != null)
+        {
+            viewModel.Recipient = Recipient;
+
+            string jsonString = JsonSerializer.Serialize(viewModel);
+
+            if (!string.IsNullOrEmpty(jsonString))
+            {
+                NotificationCssClass = "alert alert-info";
+                ResponseMessage = $"Sending message, please wait...";
+
+                response = await Http.PostAsync("https://localhost:5001/api/Message",
+                    new StringContent(jsonString, Encoding.UTF8, "application/json"));
+
+                if (response != null && response.IsSuccessStatusCode)
+                {
+                    IsSendBtnDisabled = true;
+                    ResponseMessage = "The message has been sent.";
+                    NotificationCssClass = "alert alert-success";
+                }
+                else
+                {
+                    ResponseMessage = $"Couldn't send the message, please try again later.";
+                    NotificationCssClass = "alert alert-danger";
+                    IsSendBtnDisabled = true;
+                }
+            }
+        }
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await Http.GetAsync($"https://localhost:5001/api/User/{Recipient}");
+
+        // The recipient username doesn't exist
+        if (!response.IsSuccessStatusCode)
+        {
+            NotificationCssClass = "alert alert-danger";
+            ResponseMessage = $"{Recipient} user doesn't exist.";
+        }
+        else
+        {
+            IsSendBtnDisabled = false;
+        }
+
+    }
+}

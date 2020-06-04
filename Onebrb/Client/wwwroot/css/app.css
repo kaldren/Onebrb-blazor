@@ -182,6 +182,11 @@ app {
     }
 }
 
+/*#region Generic*/
+.hidden {
+    display: none !important;
+}
+/*#endregion Generic*/
 
 /*#region Icons */
 .fas {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,10 +20,12 @@ namespace Onebrb.Server.Controllers
     public class MessageController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
+        private readonly IMapper _mapper;
 
-        public MessageController(ApplicationDbContext db)
+        public MessageController(ApplicationDbContext db, IMapper mapper)
         {
             _db = db;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -55,25 +58,16 @@ namespace Onebrb.Server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> PostMessage([FromBody] CreateMessageViewModel model)
         {
-            var guid = Guid.NewGuid();
+            var id = Guid.NewGuid();
 
-            // Automapper tomorrow
-            var message = new Message
-            {
-                Id = guid,
-                AuthorId = model.Author,
-                Body = model.Body,
-                DateSent = DateTime.UtcNow,
-                RecipientId = model.Recipient,
-                Title = model.Title
-            };
+            var message = _mapper.Map<Message>(model);
 
             await _db.Messages.AddAsync(message);
             await _db.SaveChangesAsync();
 
-            var msgFromDb = _db.Messages.FirstOrDefaultAsync(x => x.Id == guid);
+            var msgFromDb = await _db.Messages.FirstOrDefaultAsync(x => x.Id == id);
 
-            return CreatedAtAction(nameof(GetMessageById), new { id = guid }, model);
+            return CreatedAtAction(nameof(GetMessageById), new { id }, model);
         }
     }
 }

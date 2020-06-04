@@ -14,6 +14,7 @@ using System.Linq;
 using Onebrb.Server.Data;
 using Onebrb.Server.Models;
 using Onebrb.Server.Settings;
+using AutoMapper;
 
 namespace Onebrb.Server
 {
@@ -50,6 +51,7 @@ namespace Onebrb.Server
             services.AddRazorPages().
                 AddRazorRuntimeCompilation();
 
+            services.AddAutoMapper(typeof(Startup));
 
             // Settings
             services.Configure<GeneralSettings>
