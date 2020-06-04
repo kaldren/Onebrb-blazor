@@ -45,6 +45,11 @@
 
     private async Task SendMessage()
     {
+        if (IsMessageSent)
+        {
+            return;
+        }
+
         if (viewModel != null && Recipient != null)
         {
             viewModel.Recipient = Recipient;
@@ -64,6 +69,7 @@
                     IsSendBtnDisabled = true;
                     ResponseMessage = "The message has been sent.";
                     NotificationCssClass = "alert alert-success";
+                    IsMessageSent = true;
                 }
                 else
                 {
