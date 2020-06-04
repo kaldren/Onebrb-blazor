@@ -12,6 +12,7 @@ namespace Onebrb.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Produces("application/json")]
     public class UserController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
@@ -35,7 +36,7 @@ namespace Onebrb.Server.Controllers
 
             if (user == null)
             {
-                return NotFound(user);
+                return NotFound("Username not found");
             }
             else
             {
