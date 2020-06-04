@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Onebrb.Server.Data;
@@ -21,11 +22,13 @@ namespace Onebrb.Server.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly IMapper _mapper;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public MessageController(ApplicationDbContext db, IMapper mapper)
+        public MessageController(ApplicationDbContext db, IMapper mapper, UserManager<ApplicationUser> userManager)
         {
             _db = db;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -58,6 +61,16 @@ namespace Onebrb.Server.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> PostMessage([FromBody] CreateMessageViewModel model)
         {
+            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+            var recipient = await _db.Users.FirstOrDefaultAsync(x => x.UserName == model.Recipient);
+
+            if (recipient == null)
+            {
+                return BadRequest(new { Message = $"Recipient {model.Recipient} not found." });
+            }
+            model.RecipientId = recipient.Id;
+            model.AuthorId = currentUser.Id;
+
             var id = Guid.NewGuid();
 
             var message = _mapper.Map<Message>(model);

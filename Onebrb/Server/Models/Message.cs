@@ -17,5 +17,10 @@ namespace Onebrb.Server.Models
         public bool IsArchivedForAuthor { get; set; }
         public bool IsDeletedForRecipient { get; set; }
         public bool IsArchivedForRecipient { get; set; }
+
+        public Message()
+        {
+            DateSent = DateTime.UtcNow;
+        }
     }
 }
