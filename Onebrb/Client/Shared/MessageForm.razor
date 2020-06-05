@@ -41,14 +41,13 @@
 
     public string ResponseMessage { get; set; }
     public string NotificationCssClass { get; set; }
-    public bool IsMessageSent { get; set; }
     public bool UserExists { get; set; }
     public bool IsSendBtnDisabled { get; set; } = true;
     public MessageEndpointOptions ApiMessagesEndpoint { get; private set; }
 
     private async Task SendMessage()
     {
-        if (IsMessageSent)
+        if (IsSendBtnDisabled)
         {
             return;
         }
@@ -76,13 +75,12 @@
                     IsSendBtnDisabled = true;
                     ResponseMessage = "The message has been sent.";
                     NotificationCssClass = "alert alert-success";
-                    IsMessageSent = true;
                 }
                 else
                 {
+                    IsSendBtnDisabled = true;
                     ResponseMessage = $"Couldn't send the message, please try again later.";
                     NotificationCssClass = "alert alert-danger";
-                    IsSendBtnDisabled = true;
                 }
             }
         }
