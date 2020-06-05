@@ -35,4 +35,21 @@
 @code {
     [Parameter]
     public List<MessageViewModel> Model { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //var response = await Http.GetAsync($"https://localhost:5001/api/User/{Recipient}");
+
+        //// The recipient username doesn't exist
+        //if (!response.IsSuccessStatusCode)
+        //{
+        //    NotificationCssClass = "alert alert-danger";
+        //    ResponseMessage = $"{Recipient} user doesn't exist.";
+        //}
+        //else
+        //{
+        //    IsSendBtnDisabled = false;
+        //}
+
+    }
 }

@@ -3,6 +3,7 @@
 @using System.Text.Json;
 @using System.Net.Http
 @using Microsoft.AspNetCore.Components.WebAssembly.Hosting
+@using Onebrb.Client.Options
 @using Microsoft.Extensions.Configuration
 @inject IConfiguration Configuration
 @inject IWebAssemblyHostEnvironment HostEnvironment
@@ -43,6 +44,7 @@
     public bool IsMessageSent { get; set; }
     public bool UserExists { get; set; }
     public bool IsSendBtnDisabled { get; set; } = true;
+    public MessageEndpointOptions ApiMessagesEndpoint { get; private set; }
 
     private async Task SendMessage()
     {
@@ -53,6 +55,10 @@
 
         if (viewModel != null && Recipient != null)
         {
+            var messageEndpoint = Configuration
+                                    .GetSection(MessageEndpointOptions.ApiMessagesEndpoint)
+                                    .Get<MessageEndpointOptions>();
+
             viewModel.Recipient = Recipient;
 
             string jsonString = JsonSerializer.Serialize(viewModel);
@@ -62,11 +68,7 @@
                 NotificationCssClass = "alert alert-info";
                 ResponseMessage = $"Sending message, please wait...";
 
-                Uri api = new Uri($"{HostEnvironment.BaseAddress}" +
-                    $"{Configuration["ApiSettings:ApiBaseUri"]}/" +
-                    $"{Configuration["ApiSettings:MessagesEndpoint:Create"]}");
-
-                response = await Http.PostAsync(api.AbsoluteUri,
+                response = await Http.PostAsync(messageEndpoint.CreateMessage,
                     new StringContent(jsonString, Encoding.UTF8, "application/json"));
 
                 if (response != null && response.IsSuccessStatusCode)
