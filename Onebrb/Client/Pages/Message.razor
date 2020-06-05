@@ -1,11 +1,10 @@
 ﻿@page "/message"
 @page "/message/{recipient}"
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using Onebrb.Shared.ViewModels.Message
 @using System.Net.Http
-@using Microsoft.Extensions.Configuration
-@inject IConfiguration Configuration
+@using Microsoft.AspNetCore.Components.WebAssembly.Hosting
+@inject IWebAssemblyHostEnvironment HostEnvironment
 @inject HttpClient Http
 
 @attribute [Authorize]
@@ -30,8 +29,4 @@ else
         Recipient = Recipient ?? string.Empty;
     }
 
-    protected async Task<List<MessageViewModel>> GetAllMessagesAsync()
-    {
-        var response = Http.GetAsync(Configuration.)
-    }
 }

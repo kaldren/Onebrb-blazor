@@ -1,10 +1,9 @@
-﻿@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-@using Onebrb.Shared.ViewModels.Message;
+﻿@using Onebrb.Shared.ViewModels.Message;
 @using System.Text;
 @using System.Text.Json;
-@using System.Text.Json.Serialization;
 @using System.Net.Http
+@using Microsoft.AspNetCore.Components.WebAssembly.Hosting
+@inject IWebAssemblyHostEnvironment HostEnvironment
 @inject HttpClient Http
 
 <div class="message-form">
@@ -61,7 +60,9 @@
                 NotificationCssClass = "alert alert-info";
                 ResponseMessage = $"Sending message, please wait...";
 
-                response = await Http.PostAsync("https://localhost:5001/api/Message",
+                Uri api = new Uri($"{HostEnvironment.BaseAddress}/api/Message");
+
+                response = await Http.PostAsync(api.AbsoluteUri,
                     new StringContent(jsonString, Encoding.UTF8, "application/json"));
 
                 if (response != null && response.IsSuccessStatusCode)
