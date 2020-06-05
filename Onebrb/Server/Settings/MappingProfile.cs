@@ -19,6 +19,9 @@ namespace Onebrb.Server.Settings
 
             CreateMap<Models.ApplicationUser, UserViewModel>()
                 .ReverseMap();
+
+            CreateMap<Models.Message, MessageViewModel>()
+                .ReverseMap();
         }
     }
 }

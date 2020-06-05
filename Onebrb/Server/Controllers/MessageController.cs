@@ -16,8 +16,8 @@ using Onebrb.Shared.ViewModels.Message;
 namespace Onebrb.Server.Controllers
 {
     [ApiController]
-    //[Authorize]
-    [Route("api/[controller]")]
+    [Authorize]
+    [Route("api/[controller]/[action]")]
     public class MessageController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
@@ -49,6 +49,18 @@ namespace Onebrb.Server.Controllers
             {
                 return Ok(result);
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllMessagesAsync()
+        {
+            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+
+            var allMessages = await _db.Messages
+                                    .Where(x => x.RecipientId == currentUser.Id)
+                                    .ToListAsync();
+
+            return Ok(allMessages);
         }
 
         /// <summary>

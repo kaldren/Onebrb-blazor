@@ -8,7 +8,7 @@
 @inject HttpClient Http
 
 <div class="message-form">
-    <NotificationComponent CssClass="@NotificationCssClass" Message="@ResponseMessage"></NotificationComponent>
+    <Notification CssClass="@NotificationCssClass" Message="@ResponseMessage"></Notification>
 
     <EditForm Model="@viewModel" OnValidSubmit="SendMessage">
         <DataAnnotationsValidator />
