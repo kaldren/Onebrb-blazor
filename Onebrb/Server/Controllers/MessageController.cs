@@ -37,7 +37,7 @@ namespace Onebrb.Server.Controllers
         /// <param name="id"></param>
         /// <returns>Message</returns>
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetMessageById(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
             var result =  await _db.Messages.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -52,7 +52,7 @@ namespace Onebrb.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllMessagesAsync()
+        public async Task<IActionResult> Get()
         {
             var currentUser = await _userManager.GetUserAsync(HttpContext.User);
 
@@ -92,7 +92,7 @@ namespace Onebrb.Server.Controllers
 
             var msgFromDb = await _db.Messages.FirstOrDefaultAsync(x => x.Id == id);
 
-            return CreatedAtAction(nameof(GetMessageById), new { id }, model);
+            return CreatedAtAction(nameof(Get), new { id }, model);
         }
     }
 }

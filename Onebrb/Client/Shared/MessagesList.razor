@@ -1,55 +1,82 @@
 ﻿@using Onebrb.Shared.ViewModels.Message
+@using Onebrb.Client.Options
+@using Microsoft.Extensions.Configuration
+@using System.Net.Http
+@using System.Text
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@using System.Collections.Generic
+@using System.IO
+@inject IConfiguration Configuration
+@inject HttpClient Http
 
 <h2>All messages</h2>
-<form method="post">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Title</th>
-                <th scope="col">Text</th>
-                <th scope="col">Date Sent</th>
-                <th scope="col">From</th>
-                <th scope="col"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (int i = 0; i < Model.Count; i++)
-            {
+@if (Model != null && Model.Count > 0)
+{
+    <form method="post">
+        <table class="table table-striped">
+            <thead>
                 <tr>
-                    <th scope="row">@(i+1)</th>
-                    <td>@Model[i].Title</td>
-                    <td>@Model[i].Body</td>
-                    <td>@Model[i].DateSent</td>
-                    <td>@Model[i].Author</td>
-                    <td>
-                        <a title="Reply" asp-action="Create" asp-route-id="@Model[i].Author" class="btn btn-success"><i class="fas fa-reply"></i></a>
-                        <button title="Delete" asp-action="Delete" asp-route-id="@Model[i].Id" class="btn btn-danger"><i class="fas fa-trash-alt"></i></button>
-                    </td>
+                    <th scope="col">#</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Text</th>
+                    <th scope="col">Date Sent</th>
+                    <th scope="col">From</th>
+                    <th scope="col"></th>
                 </tr>
-            }
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    <tr>
+                        <th scope="row">@(i+1)</th>
+                        <td>@Model[i].Title</td>
+                        <td>@Model[i].Body</td>
+                        <td>@Model[i].DateSent</td>
+                        <td>@Model[i].Author</td>
+                        <td>
+                            <a title="Reply" asp-action="Create" asp-route-id="@Model[i].Author" class="btn btn-success"><i class="fas fa-reply"></i></a>
+                            <button title="Delete" asp-action="Delete" asp-route-id="@Model[i].Id" class="btn btn-danger"><i class="fas fa-trash-alt"></i></button>
+                        </td>
+                    </tr>
+                }
 
-        </tbody>
-    </table>
-</form>
+            </tbody>
+        </table>
+    </form>
+
+}
 @code {
-    [Parameter]
     public List<MessageViewModel> Model { get; set; }
+    public MessageEndpointOptions ApiMessagesEndpoint { get; private set; }
+    public bool IsSuccess { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        //var response = await Http.GetAsync($"https://localhost:5001/api/User/{Recipient}");
 
-        //// The recipient username doesn't exist
-        //if (!response.IsSuccessStatusCode)
+        var messageEndpoint = Configuration
+                                .GetSection(MessageEndpointOptions.ApiMessagesEndpoint)
+                                .Get<MessageEndpointOptions>();
+
+        Model = await Http.GetFromJsonAsync<List<MessageViewModel>>($"{messageEndpoint.GetAllMessages}");
+
+        //var response = await Http.GetAsync($"{messageEndpoint.GetAllMessages}");
+
+        //if (response.IsSuccessStatusCode)
         //{
-        //    NotificationCssClass = "alert alert-danger";
-        //    ResponseMessage = $"{Recipient} user doesn't exist.";
+        //    IsSuccess = true;
+        //    string content = await response.Content.ReadAsStringAsync();
+        //    // convert string to stream
+        //    byte[] byteArray = Encoding.UTF8.GetBytes(content);
+        //    MemoryStream stream = new MemoryStream(byteArray);
+
+
+        //    //StreamReader reader = new StreamReader(stream);
+
+        //    Model = await JsonSerializer.DeserializeAsync<List<MessageViewModel>>(stream);
         //}
         //else
         //{
-        //    IsSendBtnDisabled = false;
         //}
-
     }
 }
