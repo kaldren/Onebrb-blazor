@@ -64,7 +64,7 @@
 
                 Uri api = new Uri($"{HostEnvironment.BaseAddress}" +
                     $"{Configuration["ApiSettings:ApiBaseUri"]}/" +
-                    $"{Configuration["ApiSettings:CreateMessageUri"]}");
+                    $"{Configuration["ApiSettings:MessagesEndpoint:Create"]}");
 
                 response = await Http.PostAsync(api.AbsoluteUri,
                     new StringContent(jsonString, Encoding.UTF8, "application/json"));
