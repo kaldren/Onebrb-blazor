@@ -3,6 +3,8 @@
 @using System.Text.Json;
 @using System.Net.Http
 @using Microsoft.AspNetCore.Components.WebAssembly.Hosting
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
 @inject IWebAssemblyHostEnvironment HostEnvironment
 @inject HttpClient Http
 
@@ -60,7 +62,9 @@
                 NotificationCssClass = "alert alert-info";
                 ResponseMessage = $"Sending message, please wait...";
 
-                Uri api = new Uri($"{HostEnvironment.BaseAddress}/api/Message");
+                Uri api = new Uri($"{HostEnvironment.BaseAddress}" +
+                    $"{Configuration["ApiSettings:ApiBaseUri"]}/" +
+                    $"{Configuration["ApiSettings:CreateMessageUri"]}");
 
                 response = await Http.PostAsync(api.AbsoluteUri,
                     new StringContent(jsonString, Encoding.UTF8, "application/json"));

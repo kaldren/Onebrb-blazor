@@ -71,7 +71,7 @@ namespace Onebrb.Server.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> PostMessage([FromBody] CreateMessageViewModel model)
+        public async Task<IActionResult> Create([FromBody] CreateMessageViewModel model)
         {
             var currentUser = await _userManager.GetUserAsync(HttpContext.User);
             var recipient = await _db.Users.FirstOrDefaultAsync(x => x.UserName == model.Recipient);
