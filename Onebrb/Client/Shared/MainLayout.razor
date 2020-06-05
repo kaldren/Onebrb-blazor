@@ -1,16 +1,37 @@
-﻿@inherits LayoutComponentBase
+﻿@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inherits LayoutComponentBase
 
-<div class="sidebar">
-    <NavMenu />
-</div>
+@if (!IsUserAuthenticated)
+{
+    <RedirectToLogin />
+}
+else
+{
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+}
 
 <div class="main">
     <div class="top-row px-4 auth">
         <LoginDisplay />
-        <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
     </div>
 
     <div class="content px-4">
         @Body
     </div>
 </div>
+
+@code {
+    public bool IsUserAuthenticated { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        IsUserAuthenticated = user.Identity.IsAuthenticated;
+    }
+}
