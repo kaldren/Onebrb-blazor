@@ -4,6 +4,8 @@
 @using Onebrb.Shared.ViewModels.Message
 @using System.Net.Http
 @using Microsoft.AspNetCore.Components.WebAssembly.Hosting
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
 @inject IWebAssemblyHostEnvironment HostEnvironment
 @inject HttpClient Http
 
@@ -11,6 +13,7 @@
 
 @if (string.IsNullOrWhiteSpace(Recipient))
 {
+    <p>Message: @Configuration["message"]</p>
     // Show all messages
     <MessagesListComponent></MessagesListComponent>
 }
