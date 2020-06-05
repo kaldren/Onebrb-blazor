@@ -59,24 +59,5 @@
                                 .Get<MessageEndpointOptions>();
 
         Model = await Http.GetFromJsonAsync<List<MessageViewModel>>($"{messageEndpoint.GetAllMessages}");
-
-        //var response = await Http.GetAsync($"{messageEndpoint.GetAllMessages}");
-
-        //if (response.IsSuccessStatusCode)
-        //{
-        //    IsSuccess = true;
-        //    string content = await response.Content.ReadAsStringAsync();
-        //    // convert string to stream
-        //    byte[] byteArray = Encoding.UTF8.GetBytes(content);
-        //    MemoryStream stream = new MemoryStream(byteArray);
-
-
-        //    //StreamReader reader = new StreamReader(stream);
-
-        //    Model = await JsonSerializer.DeserializeAsync<List<MessageViewModel>>(stream);
-        //}
-        //else
-        //{
-        //}
     }
 }

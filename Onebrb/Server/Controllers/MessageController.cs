@@ -39,7 +39,8 @@ namespace Onebrb.Server.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            var result =  await _db.Messages.FirstOrDefaultAsync(x => x.Id == id);
+            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+            var result =  await _db.Messages.FirstOrDefaultAsync(x => x.Id == id && x.RecipientId == currentUser.Id);
 
             if (result == null)
             {
@@ -51,6 +52,10 @@ namespace Onebrb.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Get all user messages 
+        /// </summary>
+        /// <returns>All of the user's messages</returns>
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -60,7 +65,9 @@ namespace Onebrb.Server.Controllers
                                     .Where(x => x.RecipientId == currentUser.Id)
                                     .ToListAsync();
 
-            return Ok(allMessages);
+            var viewModel = _mapper.Map<List<MessageViewModel>>(allMessages);
+
+            return Ok(viewModel);
         }
 
         /// <summary>
