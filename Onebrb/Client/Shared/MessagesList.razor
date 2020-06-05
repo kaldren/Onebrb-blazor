@@ -10,7 +10,8 @@
 @inject IConfiguration Configuration
 @inject HttpClient Http
 
-<h2>All messages</h2>
+<Notification CssClass="@CssClass" Message="@StatusMessage" />
+
 @if (Model != null && Model.Count > 0)
 {
     <form method="post">
@@ -50,6 +51,8 @@
     public List<MessageViewModel> Model { get; set; }
     public MessageEndpointOptions ApiMessagesEndpoint { get; private set; }
     public bool IsSuccess { get; set; }
+    public string CssClass { get; set; } = "alert alert-info";
+    public string StatusMessage { get; set; } = "Loading...";
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,5 +62,14 @@
                                 .Get<MessageEndpointOptions>();
 
         Model = await Http.GetFromJsonAsync<List<MessageViewModel>>($"{messageEndpoint.GetAllMessages}");
+
+        if (Model != null && Model.Count > 0)
+        {
+            StatusMessage = "All Messages";
+        }
+        else
+        {
+            StatusMessage = "Couldn't fetch your messages.";
+        }
     }
 }
