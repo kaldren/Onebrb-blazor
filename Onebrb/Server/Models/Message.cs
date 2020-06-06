@@ -17,6 +17,7 @@ namespace Onebrb.Server.Models
         public bool IsArchivedForAuthor { get; set; }
         public bool IsDeletedForRecipient { get; set; }
         public bool IsArchivedForRecipient { get; set; }
+        public List<ApplicationUserMessage> ApplicationUserMessages { get; set; }
 
         public Message()
         {

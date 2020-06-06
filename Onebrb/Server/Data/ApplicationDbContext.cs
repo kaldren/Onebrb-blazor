@@ -18,6 +18,21 @@ namespace Onebrb.Server.Data
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ApplicationUserMessage>()
+                .HasOne(pt => pt.Message)
+                .WithMany(p => p.ApplicationUserMessages)
+                .HasForeignKey(pt => pt.MessageId);
+
+            modelBuilder.Entity<ApplicationUserMessage>()
+                .HasOne(pt => pt.ApplicationUser)
+                .WithMany(t => t.ApplicationUserMessages)
+                .HasForeignKey(pt => pt.ApplicationUserId);
+        }
+
         public DbSet<Message> Messages { get; set; }
     }
 }
